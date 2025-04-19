@@ -3,7 +3,7 @@ import mysql.connector
 import random
 import string
 from math import ceil
-from datetime import datetime, timedelta
+from datetime import date
 from flask import send_file
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -537,87 +537,77 @@ def delete_prediction(pred_id):
 @app.route('/predict_sales', methods=['GET'])
 def predict_sales():
     k = int(request.args.get('k', 3))
-    range_value = request.args.get('range', 'day')
+    range_type = request.args.get('range', 'day')  # day/week/month
 
+    # Load dan siapkan data (contoh sederhana)
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Ambil data historis penjualan
     cursor.execute("""
-        SELECT id_produk, tanggal, jumlah
-        FROM sales
-        ORDER BY tanggal
+        SELECT p.id, p.name, s.tanggal, s.jumlah 
+        FROM sales s 
+        JOIN product p ON s.id_produk = p.id
     """)
-    raw_sales = cursor.fetchall()
+    data = cursor.fetchall()
 
-    # Mapping ID produk string → angka
-    product_id_map = {}
+    # Mapping produk
+    product_map = {}
+    product_names = {}
+    X, y = [], []
     id_counter = 1
 
-    X, y = [], []
-
-
-    for sale in raw_sales:
-        product_id, tanggal, jumlah = sale
-
-        # Pastikan semua ID produk dikonversi ke angka
-        if product_id not in product_id_map:
-            product_id_map[product_id] = id_counter
+    for pid, pname, tanggal, jumlah in data:
+        if pid not in product_map:
+            product_map[pid] = id_counter
+            product_names[pid] = pname
             id_counter += 1
-        product_num_id = product_id_map[product_id]
-
-        # Ubah tanggal ke angka
-        if not isinstance(tanggal, datetime):
-            tanggal = datetime.strptime(str(tanggal), "%Y-%m-%d")
-        days_since = (tanggal - datetime(2000, 1, 1)).days
-
-        X.append([product_num_id, days_since])
+        days_since = (tanggal - date(2000, 1, 1)).days
+        X.append([product_map[pid], days_since])
         y.append(jumlah)
 
     if not X:
-        flash("Data penjualan tidak cukup untuk prediksi.", "warning")
+        flash('Data penjualan tidak tersedia untuk prediksi.', 'warning')
         return redirect(url_for('list_predictions'))
 
-    # Fit model
+    # KNN Prediction (sederhana)
     knn = KNeighborsRegressor(n_neighbors=k)
     knn.fit(X, y)
 
-    # Ambil semua produk
-    cursor.execute("SELECT id, name FROM product")
-    products = cursor.fetchall()
+    future_days = {'day': 1, 'week': 7, 'month': 30}[range_type]
+    results = []
 
-    now = datetime.now()
-    if range_value == 'week':
-        predict_days = 7
-    elif range_value == 'month':
-        predict_days = 30
-    else:
-        predict_days = 1
+    for pid, pname in product_names.items():
+        latest_date = max([x[1] for x, pid_map in zip(X, [x[0] for x in X]) if pid_map == product_map[pid]])
+        future_date = latest_date + future_days
+        pred = knn.predict([[product_map[pid], future_date]])[0]
+        keuntungan = round(pred * 5000)  # misal untung 5000 per unit
+        status = 'Naikkan Stok' if pred > 20 else 'Stok Aman'
 
-    future_days = (now - datetime(2000, 1, 1)).days + predict_days
+        results.append({
+            'product_name': pname,
+            'total_prediksi': int(pred),
+            'keuntungan': f"{keuntungan:,.0f}".replace(",", "."),
+            'status': status
+        })
 
-    predictions_result = []
+    # Grafik
+    fig, ax = plt.subplots()
+    ax.bar([r['product_name'] for r in results], [r['total_prediksi'] for r in results], color='skyblue')
+    ax.set_ylabel('Total Prediksi')
+    ax.set_title('Prediksi Penjualan Produk')
+    plt.xticks(rotation=45, ha='right')
 
-    for product_id, product_name in products:
-        if product_id not in product_id_map:
-            continue  # skip produk tanpa data historis
+    img = BytesIO()
+    plt.tight_layout()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
-        product_num_id = product_id_map[product_id]
-        prediction = knn.predict([[product_num_id, future_days]])
-        predicted_amount = max(int(prediction[0]), 0)  # hindari negatif
-
-        predictions_result.append((product_id, product_name, predicted_amount))
-
-    conn.close()
-
-    return render_template(
-        'predictions.html',
-        predictions=predictions_result,  # hasil prediksi
-        categories=[],
-        products=[],
-        page=1,
-        total_pages=1
-    )
-
+    return render_template('prediction_result.html',
+                           results=results,
+                           plot_url=plot_url,
+                           range_label=range_type.capitalize(),
+                           k_value=k,
+                           days=future_days)
 if __name__ == '__main__':
     app.run(debug=True)
