@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Simulasi Penjualan</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Aplikasi Simulasi Penjualan</h1>
+      <div class="user">
+        <a href="#">Admin</a>
+      </div>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="index1.html"><i class="fa fa-home"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="category.html"
+              ><i class="fa fa-plus"></i> Tambah Kategori</a
+            >
+          </li>
+          <li><a href="product.html">&#128196; Data Produk</a></li>
+          <li>
+            <a href="demand.html"
+              ><i class="fa fa-cart-plus"></i> Data Permintaan Produk</a
+            >
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-hashtag"></i> Angka Random</a>
+          </li>
+          <li><a href="#">&#128200; Hasil Prediksi</a></li>
+          <li><a href="#">&#128202; Grafik</a></li>
+          <li><a href="#">&#10067; Bantuan</a></li>
+        </ul>
+      </aside>
+      <section>
+        <h2><i class="fa fa-box"></i> Data Produk</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar produk anda.</p>
+        </div>
+
+        <div class="product-form">
+          <form action="#" method="POST" id="productForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="productName">Nama Produk</label>
+                <input
+                  type="text"
+                  id="productName"
+                  name="productName"
+                  placeholder="Masukkan nama produk"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="productQuantity">Jumlah Produk</label>
+                <input
+                  type="number"
+                  id="productQuantity"
+                  name="productQuantity"
+                  placeholder="Masukkan jumlah produk"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="productCategory">Kategori</label>
+                <select id="productCategory" name="productCategory" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  <option value="elektronik">Elektronik</option>
+                  <option value="pakaian">Pakaian</option>
+                  <option value="makanan">Makanan</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Tambah Produk</button>
+          </form>
+        </div>
+
+        <div class="product-list">
+          <h3>Produk yang Telah Ditambahkan</h3>
+          <ul id="productList">
+            <li>
+              <strong>Nama:</strong> Laptop, <strong>Jumlah:</strong> 10,
+              <strong>Kategori:</strong> Elektronik
+              <div class="actions">
+                <button class="btn-edit" onclick="editProduct()">Edit</button>
+                <button class="btn-delete" onclick="deleteProduct()">
+                  Hapus
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Aplikasi Simulasi Penjualan. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

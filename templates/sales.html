@@ -1,0 +1,244 @@
+<!-- sales.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales Management</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Sales Management</h1>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}"
+              ><i class="fa fa-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}"
+              ><i class="fa fa-folder"></i> Kategori</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_product') }}"
+              ><i class="fa fa-box"></i> Produk</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_sales') }}"
+              ><i class="fa fa-shopping-cart"></i> Penjualan</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <h2><i class="fa fa-shopping-cart"></i> Data Penjualan</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar data penjualan produk anda.</p>
+        </div>
+
+        <!-- Search Form -->
+        <form
+          method="GET"
+          action="{{ url_for('list_sales') }}"
+          class="search-form"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Cari produk..."
+            value="{{ request.args.get('search', '') }}"
+          />
+          <button type="submit" class="btn-search">
+            <i class="fa fa-search"></i> Cari
+          </button>
+          {% if request.args.get('search') %}
+          <a href="{{ url_for('list_sales') }}" class="btn-reset"
+            ><i class="fa fa-times"></i
+          ></a>
+          {% endif %}
+        </form>
+
+        <!-- Tambah/Update Penjualan Form -->
+        <div class="sales-form">
+          <form
+            method="POST"
+            id="salesForm"
+            action="{{ url_for('list_sales') }}"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label for="salesID">Sales ID (Optional)</label>
+                <input
+                  type="text"
+                  name="salesID"
+                  id="salesID"
+                  placeholder="Opsional"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="categoryID">Kategori</label>
+                <select name="categoryID" id="categoryID" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  {% for category in categories %}
+                  <option value="{{ category.id }}">{{ category.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="productID">Produk</label>
+                <select name="productID" id="productID" required>
+                  <option value="" disabled selected>Pilih Produk</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="tanggal">Tanggal</label>
+                <input type="date" name="tanggal" id="tanggal" required />
+              </div>
+
+              <div class="form-group">
+                <label for="jumlahPenjualan">Jumlah</label>
+                <input
+                  type="number"
+                  name="jumlahPenjualan"
+                  id="jumlahPenjualan"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-submit">
+              Tambah
+            </button>
+          </form>
+        </div>
+
+        <!-- List Penjualan -->
+        <div class="product-list sales-list">
+          <h3>Daftar Penjualan Produk Anda:</h3>
+          <ul id="sales-list">
+            {% for sale in sales %}
+            <li>
+              <div>
+                <strong>ID:</strong> {{ sale.id_penjualan }} |
+                <strong>Produk:</strong> {{ sale.product_name }} |
+                <strong>Tanggal:</strong> {{ sale.tanggal }} |
+                <strong>Jumlah:</strong> {{ sale.jumlah }}
+              </div>
+              <div class="actions">
+                <form
+                  action="{{ url_for('update_sale', sales_id=sale.id_penjualan) }}"
+                  method="POST"
+                  class="inline-form"
+                >
+                  <input
+                    type="hidden"
+                    name="productID"
+                    value="{{ sale.id_produk }}"
+                  />
+                  <input
+                    type="date"
+                    name="tanggal"
+                    value="{{ sale.tanggal }}"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="jumlahPenjualan"
+                    value="{{ sale.jumlah }}"
+                    required
+                  />
+                  <button type="submit" class="btn-edit">Update</button>
+                </form>
+                <button
+                  class="btn-delete"
+                  onclick="deleteSale('{{ sale.id_penjualan }}')"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <ul>
+            {% if page > 1 %}
+            <li>
+              <a href="{{ url_for('list_sales', page=page-1) }}">Previous</a>
+            </li>
+            {% endif %} {% for p in range(1, total_pages + 1) %}
+            <li>
+              <a
+                href="{{ url_for('list_sales', page=p) }}"
+                class="{{ 'active' if p == page else '' }}"
+                >{{ p }}</a
+              >
+            </li>
+            {% endfor %} {% if page < total_pages %}
+            <li><a href="{{ url_for('list_sales', page=page+1) }}">Next</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <script>
+          function editSale(button) {
+            const id = button.getAttribute("data-id");
+            // Fetch and populate sale data for editing
+          }
+
+          function deleteSale(saleID) {
+            if (confirm("Yakin ingin menghapus penjualan ini?")) {
+              window.location.href = "/delete_sale/" + saleID;
+            }
+          }
+
+          document
+            .getElementById("categoryID")
+            .addEventListener("change", function () {
+              let categoryId = this.value;
+              let productDropdown = document.getElementById("productID");
+
+              productDropdown.innerHTML =
+                '<option value="" disabled selected>Loading...</option>';
+
+              fetch(`/get_products_by_category/${categoryId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  productDropdown.innerHTML =
+                    '<option value="" disabled selected>Pilih Produk</option>';
+                  data.forEach((product) => {
+                    let option = document.createElement("option");
+                    option.value = product.id;
+                    option.textContent = product.name;
+                    productDropdown.appendChild(option);
+                  });
+                })
+                .catch((error) =>
+                  console.error("Error fetching products by category:", error)
+                );
+            });
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

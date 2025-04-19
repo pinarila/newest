@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Simulasi Penjualan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Aplikasi Simulasi Penjualan</h1>
+      <div class="user">
+        <a href="#">Admin</a>
+      </div>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}"
+              ><i class="fa fa-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}"
+              ><i class="fa fa-plus"></i> Tambah Kategori</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <h2><i class="fa fa-box"></i> Kategori Produk</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar kategori produk anda.</p>
+        </div>
+
+        <!-- Form Pencarian -->
+        <form
+          action="{{ url_for('category') }}"
+          method="GET"
+          class="search-form"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Cari Kategori"
+            value="{{ request.args.get('search', '') }}"
+          />
+          <button type="submit" class="btn-search">
+            <i class="fa fa-search"></i>
+          </button>
+          {% if request.args.get('search') %}
+          <a href="{{ url_for('category') }}" class="btn-reset"
+            ><i class="fa fa-times"></i
+          ></a>
+          {% endif %}
+        </form>
+
+        <!-- Form untuk Tambah Kategori -->
+        <div class="product-form">
+          <form
+            id="addCategoryForm"
+            action="{{ url_for('category') }}"
+            method="POST"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label for="catID">ID Kategori (Opsional)</label>
+                <input
+                  type="text"
+                  id="catID"
+                  name="catID"
+                  placeholder="Masukkan ID kategori (Opsional)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="catName">Nama Kategori</label>
+                <input
+                  type="text"
+                  id="catName"
+                  name="catName"
+                  placeholder="Masukkan kategori"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="btn-submit">Tambah Kategori</button>
+          </form>
+        </div>
+
+        <!-- Daftar kategori yang telah ditambahkan -->
+        <div class="product-list">
+          <h3>Kategori yang Telah Ditambahkan:</h3>
+          <ul id="categoryList">
+            {% for category in categories %}
+            <li>
+              <strong>Kategori:</strong> {{ category[1] }}
+              <div class="actions">
+                <button
+                  class="btn-edit"
+                  onclick="editCategory('{{ category[0] }}', '{{ category[1] }}')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn-delete"
+                  onclick="deleteCategory('{{ category[0] }}')"
+                >
+                  Hapus
+                </button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <ul>
+            {% if page > 1 %}
+            <li>
+              <a href="{{ url_for('category', page=page-1) }}">Previous</a>
+            </li>
+            {% endif %} {% for p in range(1, total_pages + 1) %}
+            <li>
+              <a
+                href="{{ url_for('category', page=p) }}"
+                class="{{ 'active' if p == page else '' }}"
+                >{{ p }}</a
+              >
+            </li>
+            {% endfor %} {% if page < total_pages %}
+            <li><a href="{{ url_for('category', page=page+1) }}">Next</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Aplikasi Simulasi Penjualan. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // Fungsi untuk mengedit kategori
+      function editCategory(catID, catName) {
+        document.getElementById("catID").value = catID;
+        document.getElementById("catName").value = catName;
+        document.getElementById("addCategoryForm").action = "/update/" + catID;
+        document.querySelector(".btn-submit").textContent = "Update Kategori";
+      }
+
+      // Fungsi untuk menghapus kategori
+      function deleteCategory(catID) {
+        if (confirm("Apakah Anda yakin ingin menghapus kategori ini?")) {
+          window.location.href = "/delete/" + catID;
+        }
+      }
+    </script>
+  </body>
+</html>

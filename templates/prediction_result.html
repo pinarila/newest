@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hasil Prediksi</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header><h1>Hasil Perhitungan Prediksi Penjualan</h1></header>
+
+    <main>
+      <a href="{{ url_for('list_predictions') }}">← Kembali ke Data Prediksi</a>
+
+      {% for r in results %}
+      <div class="prediction-box">
+        <h2>Produk: {{ r.product }}</h2>
+        <p><strong>k:</strong> {{ r.k }}</p>
+        <p><strong>Data Penjualan:</strong></p>
+        <ul>
+          {% for x, y in zip(r.X, r.y) %}
+          <li>Hari ke-{{ x }} → Jumlah: {{ y }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Hari yang diprediksi:</strong> Hari ke-{{ r.next_day }}</p>
+        <p><strong>Hasil prediksi (float):</strong> {{ r.predicted }}</p>
+        <p>
+          <strong>Hasil akhir (dibulatkan):</strong> {{ r.predicted_rounded }}
+        </p>
+      </div>
+      <hr />
+      {% endfor %} {% if not results %}
+      <p>
+        Tidak ada data yang cukup untuk melakukan prediksi dengan k = {{ k }}.
+      </p>
+      {% endif %}
+    </main>
+  </body>
+</html>

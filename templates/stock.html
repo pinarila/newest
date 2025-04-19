@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Management</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Stock Management</h1>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}"
+              ><i class="fa fa-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}"
+              ><i class="fa fa-folder"></i> Kategori</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_product') }}"
+              ><i class="fa fa-box"></i> Produk</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_stock') }}"
+              ><i class="fa fa-warehouse"></i> Stok</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <h2><i class="fa fa-warehouse"></i> Data Stok</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar data jumlah produk anda.</p>
+        </div>
+
+        <!-- Search Form -->
+        <form
+          method="GET"
+          action="{{ url_for('list_stock') }}"
+          class="search-form"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Cari produk..."
+            value="{{ request.args.get('search', '') }}"
+          />
+          <button type="submit" class="btn-search">
+            <i class="fa fa-search"></i> Cari
+          </button>
+          {% if request.args.get('search') %}
+          <a href="{{ url_for('list_stock') }}" class="btn-reset">
+            <i class="fa fa-times"></i>
+          </a>
+          {% endif %}
+        </form>
+
+        <!-- Tambah/Update Stok Form -->
+        <div class="stock-form">
+          <form
+            method="POST"
+            id="stockForm"
+            action="{{ url_for('list_stock') }}"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label for="stockID">Stock ID (Optional)</label>
+                <input
+                  type="text"
+                  name="stockID"
+                  id="stockID"
+                  placeholder="Opsional"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="manualProductID">ID Produk (Manual)</label>
+                <input
+                  type="text"
+                  name="manualProductID"
+                  id="manualProductID"
+                  placeholder="Opsional - jika tidak memilih dropdown"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="categoryID">Kategori</label>
+                <select id="categoryID" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  {% for cat in categories %}
+                  <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="productID">Produk</label>
+                <select name="productID" id="productID">
+                  <option value="" disabled selected>Pilih Produk</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="tanggal">Tanggal</label>
+                <input type="date" name="tanggal" id="tanggal" required />
+              </div>
+
+              <div class="form-group">
+                <label for="jumlahStok">Jumlah</label>
+                <input
+                  type="number"
+                  name="jumlahStok"
+                  id="jumlahStok"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-submit">
+              Tambah
+            </button>
+          </form>
+        </div>
+
+        <!-- List Stok -->
+        <div class="product-list stock-list">
+          <h3>Jumlah Stock Produk Anda :</h3>
+          <ul id="stock-list">
+            {% for s in stocks %}
+            <li>
+              <div>
+                <strong>ID:</strong> {{ s[0] }} | <strong>Produk:</strong> {{
+                s[1] }} | <strong>Tanggal:</strong> {{ s[2] }} |
+                <strong>Jumlah:</strong> {{ s[3] }}
+              </div>
+              <div class="actions">
+                <button
+                  class="btn-edit"
+                  data-id="{{ s[0] }}"
+                  data-product-name="{{ s[1] }}"
+                  data-date="{{ s[2] }}"
+                  data-qty="{{ s[3] }}"
+                  onclick="editStock(this)"
+                >
+                  Edit
+                </button>
+                <button class="btn-delete" onclick="deleteStock('{{ s[0] }}')">
+                  Delete
+                </button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <ul>
+            {% if page > 1 %}
+            <li>
+              <a href="{{ url_for('list_stock', page=page-1) }}">Previous</a>
+            </li>
+            {% endif %} {% for p in range(1, total_pages + 1) %}
+            <li>
+              <a
+                href="{{ url_for('list_stock', page=p) }}"
+                class="{{ 'active' if p == page else '' }}"
+                >{{ p }}</a
+              >
+            </li>
+            {% endfor %} {% if page < total_pages %}
+            <li><a href="{{ url_for('list_stock', page=page+1) }}">Next</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <script>
+          function editStock(button) {
+            const id = button.getAttribute("data-id");
+            const productName = button.getAttribute("data-product-name");
+            const date = button.getAttribute("data-date");
+            const quantity = button.getAttribute("data-qty");
+
+            document.getElementById("stockID").value = id;
+            document.getElementById("tanggal").value = date;
+            document.getElementById("jumlahStok").value = quantity;
+
+            // Set produk berdasarkan text (nama)
+            const select = document.getElementById("productID");
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].text === productName) {
+                select.selectedIndex = i;
+                break;
+              }
+            }
+
+            document.getElementById("stockForm").action = "/update_stock/" + id;
+            document.getElementById("btnSubmit").textContent = "Update";
+          }
+
+          function deleteStock(stockID) {
+            if (confirm("Yakin ingin menghapus stok ini?")) {
+              window.location.href = "/delete_stock/" + stockID;
+            }
+          }
+
+          document
+            .getElementById("categoryID")
+            .addEventListener("change", function () {
+              let categoryId = this.value;
+              let productDropdown = document.getElementById("productID");
+
+              productDropdown.innerHTML =
+                '<option value="" disabled selected>Loading...</option>';
+
+              fetch(`/get_products_by_category/${categoryId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  productDropdown.innerHTML =
+                    '<option value="" disabled selected>Pilih Produk</option>';
+                  data.forEach((product) => {
+                    let option = document.createElement("option");
+                    option.value = product.id;
+                    option.textContent = product.name;
+                    productDropdown.appendChild(option);
+                  });
+                })
+                .catch((error) =>
+                  console.error("Error fetching products:", error)
+                );
+            });
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

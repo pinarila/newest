@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Simulasi Penjualan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Aplikasi Simulasi Penjualan</h1>
+      <div class="user">
+        <a href="#">Admin</a>
+      </div>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="/"><i class="fa fa-home"></i> Dashboard</a>
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-plus"></i> Tambah Kategori</a>
+          </li>
+        </ul>
+      </aside>
+      <section>
+        <h2><i class="fa fa-box"></i> Kategori Produk</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar kategori produk anda.</p>
+        </div>
+
+        <div class="product-form">
+          <form action="/add_category" method="POST">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="catName">Kategori Produk</label>
+                <input
+                  type="text"
+                  id="catName"
+                  name="catName"
+                  placeholder="Masukkan kategori"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Tambah Kategori</button>
+          </form>
+        </div>
+
+        <div class="product-list">
+          <h3>Kategori yang Telah Ditambahkan:</h3>
+          <ul>
+            {% for category in categories %}
+            <li>
+              <strong>Kategori:</strong> {{ category[1] }}
+              <div class="actions">
+                <a href="/edit/{{ category[0] }}" class="btn-edit">Edit</a>
+                <a href="/delete/{{ category[0] }}" class="btn-delete">Hapus</a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Aplikasi Simulasi Penjualan. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

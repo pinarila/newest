@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Prediksi</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+      }
+      .pred-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      .pred-table th,
+      .pred-table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      .pred-table th {
+        background-color: #f4f4f4;
+      }
+      .export-link {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .chart-img {
+        text-align: center;
+      }
+      .back-link {
+        margin-top: 20px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hasil Prediksi Penjualan ({{ range_label }})</h1>
+      <a
+        href="{{ url_for('predict_sales', range=range_label.lower(), k=k_value, export='csv') }}"
+        class="export-link"
+      >
+        Export ke CSV
+      </a>
+      <p>Results: {{ results }}</p>
+      <table class="pred-table">
+        <thead>
+          <tr>
+            <th>Produk</th>
+            <th>Total Prediksi ({{ days }} hari)</th>
+            <th>Estimasi Keuntungan</th>
+            <th>Status Stok</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for result in results %}
+          <tr>
+            <td>{{ result.product_name }}</td>
+            <td>{{ result.total_prediksi }}</td>
+            <td>Rp{{ result.keuntungan }}</td>
+            <td>
+              <span
+                class="badge bg-{{ 'success' if result.status == 'Naikkan Stok' else 'danger' }}"
+                >{{ result.status }}</span
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="chart-img">
+        <h3>Grafik Prediksi</h3>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Grafik Prediksi" />
+      </div>
+
+      <a href="{{ url_for('list_predictions') }}" class="back-link"
+        >← Kembali ke Halaman Prediksi</a
+      >
+    </div>
+  </body>
+</html>

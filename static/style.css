@@ -1,0 +1,379 @@
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+header {
+  background-color: #140f3b;
+  color: #fff;
+  padding: 1rem 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 100%; /* Pastikan header tidak melebihi lebar layar */
+  box-sizing: border-box; /* Menghitung padding dalam lebar */
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  flex-grow: 1;
+}
+
+header .user {
+  margin-left: auto;
+}
+
+header .user a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+
+main {
+  display: flex;
+  width: 100%;
+}
+
+aside {
+  width: 20%;
+  background-color: #34495e;
+  color: #fff;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: calc(100vh - 2rem); /* Menyesuaikan tinggi sidebar */
+}
+
+aside ul {
+  list-style: none;
+  padding: 0;
+}
+
+aside li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 14pt;
+  display: block;
+  padding: 1rem 0;
+  transition: background-color 0.3s;
+}
+
+aside li a:hover,
+aside li a.active {
+  background-color: #2c3e50;
+}
+
+section {
+  flex-grow: 1; /* Memastikan section memanjang untuk mengisi ruang yang tersisa */
+  padding: 1rem;
+  background-color: #ecf0f1;
+}
+
+.dashboard-header {
+  background-color: #bdc3c7;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #3498db;
+  border-radius: 4px;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  display: flex;
+  align-items: center; /* Menyelaraskan ikon dengan teks */
+  font-size: 1.5rem;
+}
+
+.dashboard-header h2 i {
+  margin-right: 10px; /* Memberi ruang antara ikon dan teks */
+}
+
+.dashboard-header p {
+  color: #7f8c8d;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.card {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  color: #fff;
+}
+
+.card h3 {
+  margin: 0 0 1rem 0;
+}
+
+.card a {
+  text-decoration: none;
+  color: #fff;
+  background-color: #4c4d4e;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/*PRODUCT*/
+
+.product-form,
+.stock-form {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.form-group {
+  flex-grow: 1;
+}
+
+.product-form input,
+.product-form select,
+.stock-form input,
+.stock-form select,
+.sales-form input,
+.sales-form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Menambah jarak antara input box dan tombol tambah produk */
+.btn-submit {
+  margin-top: 15px; /* Menambahkan margin di atas tombol */
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: #0056b3;
+}
+
+/* Style untuk form pencarian */
+.search-form {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-form input {
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 250px;
+  margin-right: 10px;
+}
+
+.search-form .btn-search,
+.search-form .btn-reset {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.search-form .btn-reset {
+  background-color: #ff4d4d;
+  margin-left: 5px;
+}
+
+.search-form .btn-search i,
+.search-form .btn-reset i {
+  margin-right: 5px;
+}
+
+.search-form .btn-reset {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* Pagination styling */
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination ul {
+  list-style-type: none;
+  display: inline-block;
+  padding: 0;
+}
+
+.pagination ul li {
+  display: inline;
+  margin: 0 5px;
+}
+
+.pagination ul li a {
+  text-decoration: none;
+  color: #007bff;
+  padding: 8px 16px;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+}
+
+.pagination ul li a.active {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.pagination ul li a:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.product-list h3,
+.stock-list h3,
+.sales-list h3 {
+  margin-bottom: 1rem;
+}
+
+.product-list ul,
+.stock-list ul,
+.sales-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.product-list ul li,
+.stock-list ul li,
+.stock-list ul li {
+  background-color: #fff;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Mengurangi jarak antara button edit dan delete */
+.product-list ul li button,
+.stock-list ul li button,
+.sales-list ul li button {
+  margin-left: 5px; /* Mengurangi margin antara tombol edit dan delete */
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.product-list ul li .btn-edit,
+.stock-list ul li .btn-edit,
+.sales-list ul li .btn-edit {
+  background-color: #f39c12;
+}
+
+.product-list ul li .btn-edit:hover,
+.stock-list ul li .btn-edit:hover,
+.sales-list ul li .btn-edit:hover {
+  background-color: #e67e22;
+}
+
+.product-list ul li .btn-delete:hover,
+.stock-list ul li .btn-delete:hover,
+.sales-list ul li .btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.predict-buttons {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.predict-buttons h3 {
+  margin-bottom: 15px;
+}
+
+.btn-predict {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-predict:hover {
+  background-color: #0056b3;
+}
+
+footer {
+  background-color: #34495e;
+  color: #fff;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* Media query untuk tablet */
+@media (max-width: 768px) {
+  header {
+    padding: 0.5rem 10px; /* Mengurangi padding pada ukuran layar yang lebih kecil */
+  }
+
+  header h1 {
+    font-size: 1.2rem; /* Mengurangi ukuran font pada ukuran layar yang lebih kecil */
+  }
+}
+
+/* Media query untuk mobile */
+@media (max-width: 480px) {
+  header {
+    flex-direction: column; /* Membuat header menjadi kolom di layar yang sangat kecil */
+    padding: 0.5rem 10px;
+  }
+
+  header h1,
+  header .user {
+    width: 100%; /* Membuat judul dan user memenuhi lebar header */
+    text-align: center; /* Menyelaraskan teks ke tengah */
+    margin: 5px 0; /* Menambah margin kecil antar elemen */
+  }
+
+  header .user {
+    order: -1; /* Menempatkan user di atas judul */
+  }
+}

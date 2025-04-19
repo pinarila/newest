@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Management</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Product Management</h1>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}"
+              ><i class="fa fa-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}"
+              ><i class="fa fa-plus"></i> Tambah Kategori</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_product') }}">&#128196; Data Produk</a>
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <h2><i class="fa fa-box"></i> Data Produk</h2>
+        <div class="dashboard-header">
+          <p>Masukkan daftar data produk anda.</p>
+        </div>
+
+        <!-- Search Form -->
+        <form
+          action="{{ url_for('list_product') }}"
+          method="GET"
+          class="search-form"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Search products"
+            value="{{ request.args.get('search', '') }}"
+          />
+          <button type="submit" class="btn-search">
+            <i class="fa fa-search"></i>
+          </button>
+          {% if request.args.get('search') %}
+          <a href="{{ url_for('list_product') }}" class="btn-reset">
+            <i class="fa fa-times"></i>
+          </a>
+          {% endif %}
+        </form>
+
+        <!-- Product Form -->
+        <div class="product-form">
+          <form action="{{ url_for('list_product') }}" method="POST">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="productID">Product ID (Optional)</label>
+                <input
+                  type="text"
+                  id="productID"
+                  name="productID"
+                  placeholder="Enter Product ID (Optional)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input
+                  type="text"
+                  id="productName"
+                  name="productName"
+                  placeholder="Enter Product Name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="productUnit">Unit</label>
+                <input
+                  type="text"
+                  id="productUnit"
+                  name="productUnit"
+                  placeholder="Enter Product Unit"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="productCategory">Kategori</label>
+                <select id="productCategory" name="productCategory" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  {% for category in categories %}
+                  <option value="{{ category[0] }}">{{ category[1] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="productInitialPrice">Harga Awal</label>
+                <input
+                  type="number"
+                  id="productInitialPrice"
+                  name="productInitialPrice"
+                  placeholder="Masukkan Harga Awal"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="productPrice">Harga Jual</label>
+                <input
+                  type="number"
+                  id="productPrice"
+                  name="productPrice"
+                  placeholder="Masukkan Harga Jual"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="btn-submit">Add Product</button>
+          </form>
+        </div>
+
+        <!-- Product List -->
+        <div class="product-list">
+          <h3>Produk Anda :</h3>
+          <ul id="productList">
+            {% for product in products %}
+            <li>
+              <strong>ID:</strong> {{ product[0] }} <strong>Nama:</strong> {{
+              product[1] }} <strong>Unit:</strong> {{ product[3] }}
+              <strong>Kategori:</strong> {{ product[2] }}
+              <strong>Price:</strong> {{ product[4] }}
+              <strong>Harga Awal:</strong> {{ product[5] }}
+
+              <div class="actions">
+                <button
+                  class="btn-edit"
+                  onclick="editProduct('{{ product[0] }}', '{{ product[1] }}', '{{ product[2] }}', '{{ product[3] }}', '{{ product[4] }}', '{{ product[5] }}')"
+                >
+                  Edit
+                </button>
+
+                <button
+                  class="btn-delete"
+                  onclick="deleteProduct('{{ product[0] }}')"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <ul>
+            {% if page > 1 %}
+            <li>
+              <a href="{{ url_for('list_product', page=page-1) }}">Previous</a>
+            </li>
+            {% endif %} {% for p in range(1, total_pages + 1) %}
+            <li>
+              <a
+                href="{{ url_for('list_product', page=p) }}"
+                class="{{ 'active' if p == page else '' }}"
+                >{{ p }}</a
+              >
+            </li>
+            {% endfor %} {% if page < total_pages %}
+            <li>
+              <a href="{{ url_for('list_product', page=page+1) }}">Next</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <a href="{{ url_for('list_product') }}">Go to Product</a>
+
+        <script>
+          function editProduct(id, name, category, unit, price, initial_price) {
+            document.getElementById("productID").value = id;
+            document.getElementById("productName").value = name;
+            document.getElementById("productUnit").value = unit;
+            document.getElementById("productPrice").value = price;
+            document.getElementById("productInitialPrice").value =
+              initial_price;
+
+            const categorySelect = document.getElementById("productCategory");
+            for (let i = 0; i < categorySelect.options.length; i++) {
+              if (categorySelect.options[i].text === category) {
+                categorySelect.selectedIndex = i;
+                break;
+              }
+            }
+
+            const form = document.querySelector(".product-form form");
+            form.action = "/update_product/" + id;
+            form.method = "POST";
+            document.querySelector(".btn-submit").textContent =
+              "Update Product";
+          }
+
+          function deleteProduct(productId) {
+            if (confirm("Are you sure you want to delete this product?")) {
+              window.location.href = "/delete_product/" + productId;
+            }
+          }
+        </script>
+      </section>
+    </main>
+  </body>
+</html>

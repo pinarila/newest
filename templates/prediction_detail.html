@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Detail Prediksi</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header><h1>Detail Hasil Prediksi</h1></header>
+    <main>
+      <a href="{{ url_for('list_predictions') }}"
+        >← Kembali ke Daftar Prediksi</a
+      >
+      {% for r in results %}
+      <div class="prediction-box">
+        <h2>{{ r.product }}</h2>
+        <p><strong>ID Prediksi:</strong> {{ r.id }}</p>
+        <p><strong>Jumlah Prediksi:</strong> {{ r.predicted }}</p>
+        <p><strong>Riwayat Penjualan:</strong></p>
+        <ul>
+          {% for x, y in r.sales_data %}
+          <li>Hari ke-{{ x }}: {{ y }} penjualan</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <hr />
+      {% endfor %} {% if not results %}
+      <p>Tidak ada data prediksi ditemukan.</p>
+      {% endif %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Simulasi Penjualan</title>
+    <link rel="stylesheet" href="static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Aplikasi Simulasi Penjualan</h1>
+      <div class="user">
+        <a href="#">Admin</a>
+      </div>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}"
+              ><i class="fa fa-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}"
+              ><i class="fa fa-plus"></i> Tambah Kategori</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_product') }}"
+              ><i class="fa fa-cart-plus"></i> Data Produk</a
+            >
+          </li>
+          <li><a href="{{ url_for('list_stock') }}">📦 Manajemen Stok</a></li>
+
+          <li>
+            <a href="{{ url_for('list_sales') }}"
+              ><i class="fa fa-shopping-cart"></i> Penjualan</a
+            >
+          </li>
+          <li>
+            <a href="{{ url_for('list_predictions') }}"
+              >&#128200; Hasil Prediksi</a
+            >
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-hashtag"></i> Angka Random</a>
+          </li>
+          <li><a href="#">&#128202; Grafik</a></li>
+          <li><a href="#">&#10067; Bantuan</a></li>
+        </ul>
+      </aside>
+      <section>
+        <h2><i class="fa fa-home"></i> Dashboard</h2>
+        <div class="dashboard-header">
+          <p>
+            Selamat datang pada halaman aplikasi simulasi penjualan dengan
+            metode monte carlo.
+          </p>
+        </div>
+        <div class="grid">
+          <div class="card" style="background-color: #3498db">
+            <h3>Data Produk</h3>
+            <a href="#">+</a>
+          </div>
+          <div class="card" style="background-color: #2ecc71">
+            <h3>Data penjualan</h3>
+            <a href="#">+</a>
+          </div>
+          <div class="card" style="background-color: #f39c12">
+            <h3>Angka Random</h3>
+            <a href="#">+</a>
+          </div>
+          <div class="card" style="background-color: #e74c3c">
+            <h3>Hasil Prediksi</h3>
+            <a href="#">+</a>
+          </div>
+          <div class="card" style="background-color: #9b59b6">
+            <h3>Grafik</h3>
+            <a href="#">+</a>
+          </div>
+          <div class="card" style="background-color: #34495e">
+            <h3>Bantuan</h3>
+            <a href="#">+</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Aplikasi Simulasi Penjualan. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

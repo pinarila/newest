@@ -1,0 +1,262 @@
+<!-- predictions.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediksi Penjualan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Prediksi Penjualan</h1>
+    </header>
+
+    <main>
+      <aside>
+        <ul>
+          <li>
+            <a href="{{ url_for('dashboard') }}">
+              <i class="fa fa-home"></i> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('category') }}">
+              <i class="fa fa-folder"></i> Kategori
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('list_product') }}">
+              <i class="fa fa-box"></i> Produk
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('list_sales') }}">
+              <i class="fa fa-shopping-cart"></i> Penjualan
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('list_predictions') }}">
+              <i class="fa fa-chart-line"></i> Prediksi
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <section>
+        <h2><i class="fa fa-chart-line"></i> Data Prediksi</h2>
+        <div class="dashboard-header">
+          <p>Masukkan data prediksi penjualan berdasarkan produk.</p>
+        </div>
+
+        <!-- Search Form -->
+        <form
+          method="GET"
+          action="{{ url_for('list_predictions') }}"
+          class="search-form"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Cari produk..."
+            value="{{ request.args.get('search', '') }}"
+          />
+          <button type="submit" class="btn-search">
+            <i class="fa fa-search"></i> Cari
+          </button>
+          {% if request.args.get('search') %}
+          <a href="{{ url_for('list_predictions') }}" class="btn-reset">
+            <i class="fa fa-times"></i>
+          </a>
+          {% endif %}
+        </form>
+
+        <!-- Tambah/Update Prediksi Form -->
+        <div class="sales-form">
+          <form method="POST" action="{{ url_for('list_predictions') }}">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="categoryID">Kategori</label>
+                <select id="categoryID" name="categoryID" required>
+                  <option value="" disabled selected>Pilih Kategori</option>
+                  {% for category in categories %}
+                  <option value="{{ category[0] }}">{{ category[1] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="productID">Produk</label>
+                <select name="productID" id="productID" required>
+                  <option value="" disabled selected>Pilih Produk</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="jumlahPrediksi">Jumlah Prediksi</label>
+                <input type="number" name="jumlahPrediksi" required />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Tambah</button>
+          </form>
+        </div>
+
+        <!-- Tombol Prediksi -->
+        <div class="predict-buttons">
+          <h3>Prediksi Otomatis:</h3>
+          <form
+            method="GET"
+            action="{{ url_for('predict_sales') }}"
+            class="neighbor-form"
+          >
+            <label for="k">Masukkan nilai k (jumlah tetangga):</label>
+            <input
+              type="number"
+              id="k"
+              name="k"
+              min="1"
+              required
+              placeholder="Contoh: 3"
+              style="padding: 6px; margin: 8px 0"
+            />
+            <div style="display: flex; gap: 10px; margin-top: 10px">
+              <button
+                type="submit"
+                name="range"
+                value="day"
+                class="btn-predict"
+              >
+                Hari
+              </button>
+              <button
+                type="submit"
+                name="range"
+                value="week"
+                class="btn-predict"
+              >
+                Minggu
+              </button>
+              <button
+                type="submit"
+                name="range"
+                value="month"
+                class="btn-predict"
+              >
+                Bulan
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- List Prediksi -->
+        <div class="product-list sales-list">
+          <h3>Daftar Data Prediksi:</h3>
+          <ul>
+            {% for pred in predictions %}
+            <li>
+              <div>
+                {% if pred|length == 4 %}
+                <!-- Data dari DB -->
+                <strong>ID:</strong> {{ pred[0] }} | <strong>Produk:</strong> {{
+                pred[1] }} | <strong>Jumlah Prediksi:</strong> {{ pred[2] }} {%
+                else %}
+                <!-- Data dari KNN -->
+                <strong>ID Produk:</strong> {{ pred[0] }} |
+                <strong>Produk:</strong> {{ pred[1] }} |
+                <strong>Hasil Prediksi:</strong> {{ pred[2] }} {% endif %}
+              </div>
+
+              <div class="actions">
+                <form
+                  method="POST"
+                  action="{{ url_for('update_prediction', pred_id=pred[0]) }}"
+                  style="display: inline-block"
+                >
+                  <input type="hidden" name="productID" value="{{ pred[3] }}" />
+
+                  <input
+                    type="number"
+                    name="jumlahPrediksi"
+                    value="{{ pred[2] }}"
+                    required
+                  />
+                  <button class="btn-edit" type="submit">Update</button>
+                </form>
+                <a
+                  href="{{ url_for('delete_prediction', pred_id=pred[0]) }}"
+                  onclick="return confirm('Hapus prediksi ini?')"
+                  class="btn-delete"
+                >
+                  Hapus
+                </a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <ul>
+            {% if page > 1 %}
+            <li>
+              <a href="{{ url_for('list_predictions', page=page-1) }}"
+                >Previous</a
+              >
+            </li>
+            {% endif %} {% for p in range(1, total_pages + 1) %}
+            <li>
+              <a
+                href="{{ url_for('list_predictions', page=p) }}"
+                class="{{ 'active' if p == page else '' }}"
+              >
+                {{ p }}
+              </a>
+            </li>
+            {% endfor %} {% if page < total_pages %}
+            <li>
+              <a href="{{ url_for('list_predictions', page=page+1) }}">Next</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <script>
+          document
+            .getElementById("categoryID")
+            .addEventListener("change", function () {
+              let categoryId = this.value;
+              let productDropdown = document.getElementById("productID");
+
+              productDropdown.innerHTML =
+                '<option value="" disabled selected>Loading...</option>';
+
+              fetch(`/get_products_by_category/${categoryId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  productDropdown.innerHTML =
+                    '<option value="" disabled selected>Pilih Produk</option>';
+                  data.forEach((product) => {
+                    let option = document.createElement("option");
+                    option.value = product.id;
+                    option.textContent = product.name;
+                    productDropdown.appendChild(option);
+                  });
+                })
+                .catch((error) =>
+                  console.error("Error fetching products by category:", error)
+                );
+            });
+        </script>
+      </section>
+    </main>
+  </body>
+</html>
